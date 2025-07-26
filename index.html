@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydra Heros</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(45deg, #0a0a0a, #1a1a2e, #16213e);
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        .game-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .screen {
+            display: none;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .title {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff6b35, #f7931e, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .menu-item {
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            border: 2px solid #4facfe;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            min-width: 300px;
+        }
+        
+        .menu-item:hover {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+        }
+        
+        .character-selection {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+        
+        .character {
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            border: 3px solid #4facfe;
+            border-radius: 15px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 200px;
+        }
+        
+        .character:hover, .character.selected {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(79, 172, 254, 0.4);
+        }
+        
+        .character-avatar {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #ff6b35, #f7931e);
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 900;
+        }
+        
+        .character-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .character-description {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .start-game-btn {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            border-radius: 10px;
+            margin-top: 3rem;
+            transition: all 0.3s ease;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .start-game-btn.enabled {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .start-game-btn:hover.enabled {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 107, 53, 0.4);
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1rem;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .game-screen {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+        }
+        
+        .hud {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 2px solid #4facfe;
+        }
+        
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .player-avatar {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #ff6b35, #f7931e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 900;
+        }
+        
+        .game-message {
+            font-size: 2rem;
+            text-align: center;
+            margin-top: 5rem;
+        }
+        
+        .exit-btn {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(255, 0, 0, 0.7);
+            border: 2px solid #ff4444;
+            padding: 0.5rem 1rem;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .exit-btn:hover {
+            background: rgba(255, 0, 0, 0.9);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Title Screen -->
+        <div class="screen active" id="titleScreen">
+            <h1 class="title">HYDRA HEROS</h1>
+            <div class="menu">
+                <div class="menu-item" onclick="showCharacterSelection()">NEW GAME</div>
+                <div class="menu-item" onclick="showOptions()">OPTIONS</div>
+                <div class="menu-item" onclick="showCredits()">CREDITS</div>
+                <div class="menu-item" onclick="exitGame()">QUIT</div>
+            </div>
+        </div>
+        
+        <!-- Character Selection Screen -->
+        <div class="screen" id="characterScreen">
+            <button class="back-btn" onclick="showTitleScreen()">← BACK</button>
+            <h2 class="title" style="font-size: 2.5rem;">SELECT YOUR HERO</h2>
+            <div class="character-selection">
+                <div class="character" onclick="selectCharacter('duxx')" data-character="duxx">
+                    <div class="character-avatar">D</div>
+                    <div class="character-name">DUXX</div>
+                    <div class="character-description">The Tech Specialist<br>High accuracy, moderate damage</div>
+                </div>
+                <div class="character" onclick="selectCharacter('van')" data-character="van">
+                    <div class="character-avatar">V</div>
+                    <div class="character-name">VAN</div>
+                    <div class="character-description">The Assault Expert<br>Balanced stats, versatile fighter</div>
+                </div>
+                <div class="character" onclick="selectCharacter('grizz')" data-character="grizz">
+                    <div class="character-avatar">G</div>
+                    <div class="character-name">GRIZZ</div>
+                    <div class="character-description">The Heavy Gunner<br>High damage, slower movement</div>
+                </div>
+            </div>
+            <button class="start-game-btn" id="startGameBtn" onclick="startGame()">START GAME</button>
+        </div>
+        
+        <!-- Game Screen -->
+        <div class="screen game-screen" id="gameScreen">
+            <div class="hud">
+                <div class="player-info">
+                    <div class="player-avatar" id="gamePlayerAvatar"></div>
+                    <div>
+                        <div id="playerName"></div>
+                        <div style="font-size: 0.8rem; opacity: 0.8;" id="playerClass"></div>
+                    </div>
+                </div>
+            </div>
+            <button class="exit-btn" onclick="showTitleScreen()">EXIT TO MENU</button>
+            <div class="game-message">
+                <h2>Welcome to Hydra Heros!</h2>
+                <p style="font-size: 1.2rem; margin-top: 2rem;">
+                    You are now playing as <span id="selectedCharacterName"></span>!<br>
+                    <span style="font-size: 1rem; opacity: 0.8;">Game mechanics and levels would be implemented here...</span>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Options Screen -->
+        <div class="screen" id="optionsScreen">
+            <button class="back-btn" onclick="showTitleScreen()">← BACK</button>
+            <h2 class="title" style="font-size: 2.5rem;">OPTIONS</h2>
+            <div class="menu">
+                <div class="menu-item">Sound Volume</div>
+                <div class="menu-item">Music Volume</div>
+                <div class="menu-item">Display Settings</div>
+                <div class="menu-item">Controls</div>
+            </div>
+        </div>
+        
+        <!-- Credits Screen -->
+        <div class="screen" id="creditsScreen">
+            <button class="back-btn" onclick="showTitleScreen()">← BACK</button>
+            <h2 class="title" style="font-size: 2.5rem;">CREDITS</h2>
+            <div style="font-size: 1.2rem; line-height: 2; margin-top: 3rem;">
+                <p><strong>Hydra Heros</strong></p>
+                <p>Reimagined from Duke Nukem 3D Source Code</p>
+                <br>
+                <p><strong>Original Game:</strong> Duke Nukem 3D</p>
+                <p><strong>Original Developers:</strong> 3D Realms</p>
+                <p><strong>Build Engine:</strong> Ken Silverman</p>
+                <br>
+                <p><strong>Hydra Heros Remake:</strong> AI Assistant</p>
+                <p><strong>Character Design:</strong> Duxx, Van, Grizz</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedCharacter = null;
+        
+        const characters = {
+            duxx: {
+                name: "DUXX",
+                class: "Tech Specialist",
+                avatar: "D",
+                description: "High accuracy, moderate damage"
+            },
+            van: {
+                name: "VAN", 
+                class: "Assault Expert",
+                avatar: "V",
+                description: "Balanced stats, versatile fighter"
+            },
+            grizz: {
+                name: "GRIZZ",
+                class: "Heavy Gunner", 
+                avatar: "G",
+                description: "High damage, slower movement"
+            }
+        };
+        
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+        
+        function showTitleScreen() {
+            showScreen('titleScreen');
+        }
+        
+        function showCharacterSelection() {
+            selectedCharacter = null;
+            document.querySelectorAll('.character').forEach(char => {
+                char.classList.remove('selected');
+            });
+            document.getElementById('startGameBtn').classList.remove('enabled');
+            showScreen('characterScreen');
+        }
+        
+        function showOptions() {
+            showScreen('optionsScreen');
+        }
+        
+        function showCredits() {
+            showScreen('creditsScreen');
+        }
+        
+        function selectCharacter(characterId) {
+            selectedCharacter = characterId;
+            
+            // Remove selection from all characters
+            document.querySelectorAll('.character').forEach(char => {
+                char.classList.remove('selected');
+            });
+            
+            // Add selection to clicked character
+            document.querySelector(`[data-character="${characterId}"]`).classList.add('selected');
+            
+            // Enable start game button
+            document.getElementById('startGameBtn').classList.add('enabled');
+        }
+        
+        function startGame() {
+            if (!selectedCharacter) return;
+            
+            const character = characters[selectedCharacter];
+            
+            // Update game screen with selected character
+            document.getElementById('gamePlayerAvatar').textContent = character.avatar;
+            document.getElementById('playerName').textContent = character.name;
+            document.getElementById('playerClass').textContent = character.class;
+            document.getElementById('selectedCharacterName').textContent = character.name;
+            
+            showScreen('gameScreen');
+        }
+        
+        function exitGame() {
+            if (confirm('Are you sure you want to quit Hydra Heros?')) {
+                window.close();
+            }
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (document.getElementById('gameScreen').classList.contains('active')) {
+                    showTitleScreen();
+                } else if (!document.getElementById('titleScreen').classList.contains('active')) {
+                    showTitleScreen();
+                }
+            }
+        });
+        
+        // Add some visual effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add floating particles effect
+            for (let i = 0; i < 50; i++) {
+                createParticle();
+            }
+        });
+        
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.style.position = 'fixed';
+            particle.style.width = '2px';
+            particle.style.height = '2px';
+            particle.style.background = '#4facfe';
+            particle.style.borderRadius = '50%';
+            particle.style.pointerEvents = 'none';
+            particle.style.opacity = Math.random() * 0.5 + 0.2;
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.top = Math.random() * 100 + 'vh';
+            particle.style.animation = `float ${Math.random() * 10 + 5}s infinite linear`;
+            
+            document.body.appendChild(particle);
+            
+            // Remove particle after animation
+            setTimeout(() => {
+                if (particle.parentNode) {
+                    particle.parentNode.removeChild(particle);
+                }
+                createParticle(); // Create a new one
+            }, (Math.random() * 10 + 5) * 1000);
+        }
+        
+        // Add float animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0% { transform: translateY(100vh) translateX(0); }
+                100% { transform: translateY(-10vh) translateX(${Math.random() * 100 - 50}px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
