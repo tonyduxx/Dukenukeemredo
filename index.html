@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydra Heros</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="gameContainer">
+        <!-- Character Selection Screen -->
+        <div id="characterSelect" class="screen active">
+            <div class="title">
+                <h1>HYDRA HEROS</h1>
+                <p class="subtitle">Choose Your Hero</p>
+            </div>
+            
+            <div class="character-grid">
+                <div class="character-card" data-character="duxx">
+                    <div class="character-image duxx"></div>
+                    <h3>DUXX</h3>
+                    <p class="character-desc">The agile scout with enhanced speed and precision weapons.</p>
+                    <div class="stats">
+                        <span>Speed: ★★★★☆</span>
+                        <span>Health: ★★★☆☆</span>
+                        <span>Damage: ★★★☆☆</span>
+                    </div>
+                </div>
+                
+                <div class="character-card" data-character="van">
+                    <div class="character-image van"></div>
+                    <h3>VAN</h3>
+                    <p class="character-desc">The balanced warrior with versatile combat abilities.</p>
+                    <div class="stats">
+                        <span>Speed: ★★★☆☆</span>
+                        <span>Health: ★★★★☆</span>
+                        <span>Damage: ★★★★☆</span>
+                    </div>
+                </div>
+                
+                <div class="character-card" data-character="grizz">
+                    <div class="character-image grizz"></div>
+                    <h3>GRIZZ</h3>
+                    <p class="character-desc">The heavy tank with maximum health and devastating firepower.</p>
+                    <div class="stats">
+                        <span>Speed: ★★☆☆☆</span>
+                        <span>Health: ★★★★★</span>
+                        <span>Damage: ★★★★★</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <p>Use ARROW KEYS to navigate, ENTER to select</p>
+                <button id="startGame" class="start-btn">START GAME</button>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" class="screen">
+            <canvas id="gameCanvas"></canvas>
+            <div id="hud">
+                <div class="health-bar">
+                    <div class="health-fill"></div>
+                    <span class="health-text">100</span>
+                </div>
+                <div class="ammo-counter">
+                    <span id="ammoText">30</span>
+                </div>
+                <div class="score">
+                    <span id="scoreText">0</span>
+                </div>
+            </div>
+            <div id="gameOver" class="hidden">
+                <h2>GAME OVER</h2>
+                <p>Score: <span id="finalScore">0</span></p>
+                <button id="restartBtn">Play Again</button>
+                <button id="menuBtn">Main Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
